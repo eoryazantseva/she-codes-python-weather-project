@@ -1,5 +1,6 @@
 import csv
 from datetime import datetime
+from statistics import mean
 
 DEGREE_SYBMOL = u"\N{DEGREE SIGN}C"
 
@@ -13,6 +14,7 @@ def format_temperature(temp):
     Returns:
         A string contain the temperature and "degrees celcius."
     """
+
     return f"{temp}{DEGREE_SYBMOL}"
 
 
@@ -35,7 +37,8 @@ def convert_f_to_c(temp_in_farenheit):
     Returns:
         A float representing a temperature in degrees celcius, rounded to 1dp.
     """
-    pass
+    result = (float(temp_in_farenheit) - 32) * 5/9
+    return round(result, 1)
 
 
 def calculate_mean(weather_data):
@@ -46,7 +49,12 @@ def calculate_mean(weather_data):
     Returns:
         A float representing the mean value.
     """
-    pass
+    result=mean([float(x) for x in weather_data])
+    if (result % 2) == 0:
+        return int(result)
+    else:
+        return result
+    
 
 
 def load_data_from_csv(csv_file):
