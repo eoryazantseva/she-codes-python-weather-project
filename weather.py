@@ -56,7 +56,7 @@ def calculate_mean(weather_data):
     if (result % 2) == 0:
         return int(result)
     else:
-        return round(result, 1)
+        return result
     
 
 
@@ -71,8 +71,12 @@ def load_data_from_csv(csv_file):
     data = []
     with open(csv_file, 'r') as my_file:
         csv_reader = csv.reader(my_file)
+        next(csv_reader)
         for row in csv_reader:
-            data.append(row)
+            if len(row) >=3:
+                row[1] = int(row[1])
+                row[2] = int(row[2])
+                data.append(row)
     return data
 
 
@@ -139,13 +143,15 @@ def generate_summary(weather_data):
 
     date_lowest = list_of_dates[find_min(list_of_lows)[1]]
     date_highest = list_of_dates[find_max(list_of_highs)[1]]
+    average_low = round(calculate_mean(list_of_lows), 1)
+    average_high = round(calculate_mean(list_of_highs), 1)
 
 
     return f"{len(weather_data)} Day Overview\n"\
     f"  The lowest temperature will be {format_temperature(find_min(list_of_lows)[0])}, and will occur on {date_lowest}.\n"\
     f"  The highest temperature will be {format_temperature(find_max(list_of_highs)[0])}, and will occur on {date_highest}.\n"\
-    f"  The average low this week is {format_temperature(calculate_mean(list_of_lows))}.\n"\
-    f"  The average high this week is {format_temperature(calculate_mean(list_of_highs))}.\n"
+    f"  The average low this week is {format_temperature(average_low)}.\n"\
+    f"  The average high this week is {format_temperature(average_high)}.\n"
 
 
 
@@ -157,4 +163,22 @@ def generate_daily_summary(weather_data):
     Returns:
         A string containing the summary information.
     """
-    pass
+    summary = ""
+    for row in weather_data:
+        date = convert_date(row[0])
+        min_temp = convert_f_to_c(row[1])
+        max_temp = convert_f_to_c(row[2])
+        
+        summary += f"---- {date} ----\n"\
+        f"  Minimum Temperature: {format_temperature(min_temp)}\n"\
+        f"  Maximum Temperature: {format_temperature(max_temp)}\n\n"
+        
+    return summary
+
+# ---- Friday 02 July 2021----
+#   Minimum Temperature: 9.4°C
+#   Maximum Temperature: 19.4°C
+
+# ---- Saturday 03 July 2021 ----
+#   Minimum Temperature: 13.9°C
+#   Maximum Temperature: 20.0°C
