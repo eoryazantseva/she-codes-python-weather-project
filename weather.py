@@ -26,7 +26,10 @@ def convert_date(iso_string):
     Returns:
         A date formatted like: Weekday Date Month Year e.g. Tuesday 06 July 2021
     """
-    pass
+    dt = datetime.fromisoformat(iso_string)
+    formatted_date = dt.strftime("%A %d %B %Y")
+    return formatted_date
+
 
 
 def convert_f_to_c(temp_in_farenheit):
@@ -53,7 +56,7 @@ def calculate_mean(weather_data):
     if (result % 2) == 0:
         return int(result)
     else:
-        return result
+        return round(result, 1)
     
 
 
@@ -65,7 +68,13 @@ def load_data_from_csv(csv_file):
     Returns:
         A list of lists, where each sublist is a (non-empty) line in the csv file.
     """
-    pass
+    data = []
+    with open(csv_file, 'r') as my_file:
+        csv_reader = csv.reader(my_file)
+        for row in csv_reader:
+            data.append(row)
+    return data
+
 
 
 def find_min(weather_data):
@@ -76,7 +85,17 @@ def find_min(weather_data):
     Returns:
         The minium value and it's position in the list.
     """
-    pass
+    for element in weather_data:
+        if isinstance(element, str):
+            weather_data = ([float(x) for x in weather_data])
+
+    if not weather_data:
+        return ()
+    else:
+        min_value = min(weather_data)
+        weather_data.reverse()
+        index = len(weather_data) - weather_data.index(min_value) - 1
+        return min_value, index
 
 
 def find_max(weather_data):
@@ -87,7 +106,17 @@ def find_max(weather_data):
     Returns:
         The maximum value and it's position in the list.
     """
-    pass
+    for element in weather_data:
+        if isinstance(element, str):
+            weather_data = ([float(x) for x in weather_data])
+
+    if not weather_data:
+        return ()
+    else:
+        max_value = max(weather_data)
+        weather_data.reverse()
+        index = len(weather_data) - weather_data.index(max_value) - 1
+        return max_value, index
 
 
 def generate_summary(weather_data):
@@ -98,7 +127,26 @@ def generate_summary(weather_data):
     Returns:
         A string containing the summary information.
     """
-    pass
+    
+    list_of_dates = []
+    list_of_lows = []
+    list_of_highs = []
+        
+    for row in weather_data:
+        list_of_dates.append(convert_date(row[0]))
+        list_of_lows.append(convert_f_to_c(row[1]))
+        list_of_highs.append(convert_f_to_c(row[2]))
+
+    date_lowest = list_of_dates[find_min(list_of_lows)[1]]
+    date_highest = list_of_dates[find_max(list_of_highs)[1]]
+
+
+    return f"{len(weather_data)} Day Overview\n"\
+    f"  The lowest temperature will be {format_temperature(find_min(list_of_lows)[0])}, and will occur on {date_lowest}.\n"\
+    f"  The highest temperature will be {format_temperature(find_max(list_of_highs)[0])}, and will occur on {date_highest}.\n"\
+    f"  The average low this week is {format_temperature(calculate_mean(list_of_lows))}.\n"\
+    f"  The average high this week is {format_temperature(calculate_mean(list_of_highs))}.\n"
+
 
 
 def generate_daily_summary(weather_data):
